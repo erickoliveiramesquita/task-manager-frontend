@@ -1,7 +1,7 @@
-import Login from './components/Login';
+import PageHandler from './components/PageHandler';
 
 function App() {
-  return <Login />;
+  return <PageHandler />;
 }
 
 export default App;
