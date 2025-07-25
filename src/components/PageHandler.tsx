@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Login from "./Login";
 import Home from "./Home";
 
@@ -8,40 +8,25 @@ const PageHandler = () => {
   const [error, setError] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const users = [
-    { email: "teste@exemplo.com", password: "123456" },
-    { email: "erick@exemplo.com", password: "senha123" },
-  ];
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Validação simples
-    if (!email || !password) {
-      setError("Por favor, preencha todos os campos.");
-      return;
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("loggedInEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setIsLoggedIn(true);
     }
+  }, []);
 
-    const userFound = users.find(
-      (user) => user.email === email && user.password === password
-    );
-
-    if (!userFound) {
-      setError("Credenciais inválidas. Tente novamente.");
-      return;
-    }
-
-    // Limpa erro se tudo ok
-    setError("");
-
+  const handleLogin = (email: string) => {
+    setEmail(email);
     setIsLoggedIn(true);
-
+    localStorage.setItem("loggedInEmail", email);
   };
 
   const handleLogout = () => {
     setEmail("");
     setPassword("");
     setIsLoggedIn(false);
+    localStorage.removeItem("loggedInEmail");
   };
 
   return (
@@ -49,12 +34,14 @@ const PageHandler = () => {
       {!isLoggedIn ? (
         <Login
           email={email}
+          setEmail={setEmail}
           password={password}
+          setPassword={setPassword}
           error={error}
-          onEmailChange={setEmail}
-          onPasswordChange={setPassword}
-          onSubmit={handleSubmit}
+          setError={setError}
+          handleLogin={handleLogin}
         />
+        /*<Login onLogin={handleLogin} />*/
       ) : (
         <Home email={email} onLogout={handleLogout} />
       )}
