@@ -3,6 +3,7 @@ import Login from "./Login";
 import Home from "./Home";
 
 const PageHandler = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -33,6 +34,8 @@ const PageHandler = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       {!isLoggedIn ? (
         <Login
+          name={name}
+          setName={setName}
           email={email}
           setEmail={setEmail}
           password={password}
@@ -41,9 +44,12 @@ const PageHandler = () => {
           setError={setError}
           handleLogin={handleLogin}
         />
-        /*<Login onLogin={handleLogin} />*/
       ) : (
-        <Home email={email} onLogout={handleLogout} />
+        <Home 
+          email={email}
+          name={name}
+          handleLogout={handleLogout} 
+        />
       )}
     </div>
   );

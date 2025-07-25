@@ -1,6 +1,6 @@
-//import { useEffect, useState } from "react";
-
 interface LoginProps {
+  name: string;
+  setName: (value: string) => void;
   email: string;
   setEmail: (value: string) => void;
   password: string;
@@ -8,11 +8,11 @@ interface LoginProps {
   error: string;
   setError: (value: string) => void;
   handleLogin: (value: string) => void;
-  /*onSubmit: (e: React.FormEvent) => void;*/
-  /*onLogin: (email: String) => void;*/
 }
 
-const Login = ({ 
+const Login = ({
+  name,
+  setName,
   email,
   setEmail,
   password,
@@ -20,12 +20,10 @@ const Login = ({
   error,
   setError,
   handleLogin,
-  /*onSubmit,*/
- }: LoginProps) => {
-
+}: LoginProps) => {
   const users = [
-    { email: "teste@exemplo.com", password: "123456" },
-    { email: "erick@exemplo.com", password: "senha123" },
+    { name: "Tester", email: "teste@exemplo.com", password: "123456" },
+    { name: "Érick", email: "erick@exemplo.com", password: "senha123" },
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -41,7 +39,10 @@ const Login = ({
       (user) => user.email === email && user.password === password
     );
 
-    if (!userFound) {
+    if (userFound) {
+      name = userFound.name;
+      setName(name);
+    } else {
       setError("Credenciais inválidas. Tente novamente.");
       return;
     }
@@ -51,19 +52,22 @@ const Login = ({
 
     handleLogin(email);
     //setIsLoggedIn(true);
-
   };
 
   return (
-    
     <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-      <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Login</h2>
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
+        Login
+      </h2>
       <form className="space-y-4" onSubmit={handleSubmit}>
         {error && (
           <p className="text-red-600 text-center font-semibold">{error}</p>
         )}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
             E-mail
           </label>
           <input
@@ -76,7 +80,10 @@ const Login = ({
           />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
             Senha
           </label>
           <input
