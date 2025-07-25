@@ -4,7 +4,7 @@ interface Props {
   handleLogout: () => void;
 }
 
-const Home = ({ email, name, handleLogout }: Props) => {
+const Home = ({ name, handleLogout }: Props) => {
   return (
     <div className="w-full h-screen flex flex-col">
       {/* Header */}
