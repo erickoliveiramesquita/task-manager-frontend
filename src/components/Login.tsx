@@ -7,7 +7,7 @@ interface LoginProps {
   setPassword: (value: string) => void;
   error: string;
   setError: (value: string) => void;
-  handleLogin: (value: string) => void;
+  handleLogin: (value: string, value2: string) => void;
 }
 
 const Login = ({
@@ -50,7 +50,7 @@ const Login = ({
     // Limpa erro se tudo ok
     setError("");
 
-    handleLogin(email);
+    handleLogin(email, name);
     //setIsLoggedIn(true);
   };
 

@@ -11,23 +11,29 @@ const PageHandler = () => {
 
   useEffect(() => {
     const savedEmail = localStorage.getItem("loggedInEmail");
-    if (savedEmail) {
+    const savedName = localStorage.getItem("loggedInName");
+    if (savedEmail && savedName) {
       setEmail(savedEmail);
+      setName(savedName);
       setIsLoggedIn(true);
     }
   }, []);
 
-  const handleLogin = (email: string) => {
+  const handleLogin = (email: string, name: string) => {
     setEmail(email);
+    setName(name);
     setIsLoggedIn(true);
     localStorage.setItem("loggedInEmail", email);
+    localStorage.setItem("loggedInName", name);
   };
 
   const handleLogout = () => {
     setEmail("");
     setPassword("");
+    setName("");
     setIsLoggedIn(false);
     localStorage.removeItem("loggedInEmail");
+    localStorage.removeItem("loggedInName");
   };
 
   return (
