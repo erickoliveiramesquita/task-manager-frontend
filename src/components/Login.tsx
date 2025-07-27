@@ -71,9 +71,9 @@ const Login = ({
         if (isLoginMode) {
           //localStorage.setItem("user", JSON.stringify({ email }));
           //onLogin();
-          handleLogin(email, name);
           name = JSON.stringify({ name });
           email = JSON.stringify({ email });
+          handleLogin(email, name);
         } else {
           alert("Usuário cadastrado com sucesso!");
           setIsLoginMode(true);
