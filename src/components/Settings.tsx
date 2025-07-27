@@ -5,8 +5,14 @@ interface Props {
   onBack: () => void;
 }
 
+type User = {
+  id: number;
+  name: string;
+  email: string;
+};
+
 const Settings = ({ onBack }: Props) => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[] | string>([]);
   const [loading, setLoading] = useState(false);
 
   const loader = async () => {
@@ -61,7 +67,7 @@ const Settings = ({ onBack }: Props) => {
               </li>
             ))
           ) : (
-            <p>{users}</p> // Caso seja uma string de erro
+            <p>erro</p> // Caso seja uma string de erro
           )}
         </ul>
       </div>

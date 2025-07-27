@@ -9,7 +9,7 @@ interface Props {
   handleLogout: () => void;
 }
 
-const Home = ({ name, email, handleLogout }: Props) => {
+const Home = ({ name, handleLogout }: Props) => {
   const [page, setPage] = useState(0); // 0: Home, 1: LastList, 2: AllLists, 3: Settings
 
   const handleGoTo = (pageNumber: number) => {
