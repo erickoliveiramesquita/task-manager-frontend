@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 interface LoginProps {
   name: string;
   setName: (value: string) => void;
@@ -21,13 +23,19 @@ const Login = ({
   setError,
   handleLogin,
 }: LoginProps) => {
-  const users = [
+  /*const users = [
     { name: "Tester", email: "teste@exemplo.com", password: "123456" },
     { name: "Érick", email: "erick@exemplo.com", password: "senha123" },
-  ];
+  ];*/
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isLoginMode, setIsLoginMode] = useState(true);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const url = isLoginMode
+      ? "https://task-manager-backend-flask-g2c9.onrender.com/login"
+      : "https://task-manager-backend-flask-g2c9.onrender.com/signup";
 
     // Validação simples
     if (!email || !password) {
@@ -35,7 +43,7 @@ const Login = ({
       return;
     }
 
-    const userFound = users.find(
+    /*const userFound = users.find(
       (user) => user.email === email && user.password === password
     );
 
@@ -45,23 +53,68 @@ const Login = ({
     } else {
       setError("Credenciais inválidas. Tente novamente.");
       return;
+    }*/
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Erro desconhecido");
+      } else {
+        setError("");
+        if (isLoginMode) {
+          //localStorage.setItem("user", JSON.stringify({ email }));
+          //onLogin();
+          handleLogin(email, name);
+          name = JSON.stringify({ name });
+          email = JSON.stringify({ email });
+        } else {
+          alert("Usuário cadastrado com sucesso!");
+          setIsLoginMode(true);
+        }
+      }
+    } catch (err) {
+      setError("Erro ao conectar com o servidor.");
     }
 
     // Limpa erro se tudo ok
     setError("");
 
-    handleLogin(email, name);
-    //setIsLoggedIn(true);
+    //handleLogin(email, name);
   };
 
   return (
     <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
       <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-        Login
+        {isLoginMode ? "Entrar" : "Cadastrar"}
       </h2>
       <form className="space-y-4" onSubmit={handleSubmit}>
         {error && (
           <p className="text-red-600 text-center font-semibold">{error}</p>
+        )}
+        {!isLoginMode && (
+          <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Nome
+          </label>
+          <input
+            type="text"
+            id="name"
+            className="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Fulano de Tal"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
         )}
         <div>
           <label
@@ -101,6 +154,17 @@ const Login = ({
         >
           Entrar
         </button>
+        <p className="">
+          {isLoginMode ? (
+            <>
+              Não possui cadastro? <a onClick={() => setIsLoginMode(false)}>Sign up</a>
+            </>
+          ) : (
+            <>
+              Já é cadastrado? <a onClick={() => setIsLoginMode(true)}>Sign in</a>
+            </>
+          )}
+        </p>
       </form>
     </div>
   );
