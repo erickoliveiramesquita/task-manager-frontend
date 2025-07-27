@@ -9,7 +9,7 @@ interface Props {
   handleLogout: () => void;
 }
 
-const Home = ({ name, handleLogout }: Props) => {
+const Home = ({ name, email, handleLogout }: Props) => {
   const [page, setPage] = useState(0); // 0: Home, 1: LastList, 2: AllLists, 3: Settings
 
   const handleGoTo = (pageNumber: number) => {
@@ -22,7 +22,7 @@ const Home = ({ name, handleLogout }: Props) => {
       <header className="bg-blue-600 text-white px-6 py-4 rounded-b-xl flex justify-between items-center">
         <h1 className="text-xl font-bold">Task Manager</h1>
         <div>
-          <span className="mr-4">Bem-vindo, {name}</span>
+          <span className="mr-4">Bem-vindo, {name || "/usuário/"}</span>
           <button
             onClick={handleLogout}
             className="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition"
@@ -37,7 +37,7 @@ const Home = ({ name, handleLogout }: Props) => {
           <button 
             className="w-full max-w-md bg-white py-6 px-8 rounded-xl shadow-md text-blue-700 font-semibold text-lg hover:bg-blue-50 transition"
             onClick={() => handleGoTo(1)}>
-            📂 Última lista de tarefa aberta
+            📂 Última lista de tarefas aberta
           </button>
 
           <button 

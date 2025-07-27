@@ -23,37 +23,24 @@ const Login = ({
   setError,
   handleLogin,
 }: LoginProps) => {
-  /*const users = [
-    { name: "Tester", email: "teste@exemplo.com", password: "123456" },
-    { name: "Érick", email: "erick@exemplo.com", password: "senha123" },
-  ];*/
-
   const [isLoginMode, setIsLoginMode] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     const url = isLoginMode
       ? "https://task-manager-backend-flask-g2c9.onrender.com/login"
       : "https://task-manager-backend-flask-g2c9.onrender.com/signup";
 
     // Validação simples
-    if (!email || !password) {
+    if (!email || !password || (!isLoginMode && !name)) {
       setError("Por favor, preencha todos os campos.");
+      setLoading(false);
       return;
     }
-
-    /*const userFound = users.find(
-      (user) => user.email === email && user.password === password
-    );
-
-    if (userFound) {
-      name = userFound.name;
-      setName(name);
-    } else {
-      setError("Credenciais inválidas. Tente novamente.");
-      return;
-    }*/
 
     try {
       const response = await fetch(url, {
@@ -69,11 +56,10 @@ const Login = ({
       } else {
         setError("");
         if (isLoginMode) {
-          //localStorage.setItem("user", JSON.stringify({ email }));
-          //onLogin();
-          name = JSON.stringify({ name });
-          email = JSON.stringify({ email });
+          name = data.name;
+          email = data.email;
           handleLogin(email, name);
+          setError(data.error);
         } else {
           alert("Usuário cadastrado com sucesso!");
           setIsLoginMode(true);
@@ -81,12 +67,9 @@ const Login = ({
       }
     } catch (err) {
       setError("Erro ao conectar com o servidor.");
+    } finally {
+      setLoading(false);
     }
-
-    // Limpa erro se tudo ok
-    setError("");
-
-    //handleLogin(email, name);
   };
 
   return (
@@ -100,21 +83,21 @@ const Login = ({
         )}
         {!isLoginMode && (
           <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Nome
-          </label>
-          <input
-            type="text"
-            id="name"
-            className="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Fulano de Tal"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Nome
+            </label>
+            <input
+              type="text"
+              id="name"
+              className="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Fulano de Tal"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
         )}
         <div>
           <label
@@ -148,20 +131,30 @@ const Login = ({
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Entrar
-        </button>
+
+        {loading ? (
+          <button className="w-full bg-gray-400 text-white py-2 rounded-lg transition-colors">
+            Carregando
+          </button>
+        ) : (
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {isLoginMode ? <>Entrar</> : <>Cadastrar</>}
+          </button>
+        )}
+
         <p className="">
           {isLoginMode ? (
             <>
-              Não possui cadastro? <a onClick={() => setIsLoginMode(false)}>Sign up</a>
+              Não possui cadastro?{" "}
+              <a onClick={() => setIsLoginMode(false)}>Sign up</a>
             </>
           ) : (
             <>
-              Já é cadastrado? <a onClick={() => setIsLoginMode(true)}>Sign in</a>
+              Já é cadastrado?{" "}
+              <a onClick={() => setIsLoginMode(true)}>Sign in</a>
             </>
           )}
         </p>
