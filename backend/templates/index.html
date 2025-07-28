@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Usuários</title>
+</head>
+<body>
+    <h1>Lista de Usuários</h1>
+    <ul>
+        {% for user in usuarios %}
+        <li>{{ user[0] }} - {{ user[1] }}</li> <!-- Ajuste conforme colunas da tabela -->
+        {% endfor %}
+    </ul>
+</body>
+</html>
