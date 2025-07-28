@@ -1,4 +1,9 @@
-# 📝 Gerenciador de Tarefas com React e Flask
+# 📝 Gerenciador de Tarefas com React, Flask e MySQL
+
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-2.3-lightgrey?logo=flask)
+![MySQL](https://img.shields.io/badge/Database-MySQL-4479A1?logo=mysql&logoColor=white)
 
 Este é um projeto completo de Gerenciador de Tarefas, com frontend em React e backend em Flask, ideal para praticar integração entre tecnologias modernas de desenvolvimento web. O foco está no cadastro, visualização e gerenciamento de tarefas, com um sistema de autenticação simples para usuários.
 ## 🚀 Funcionalidades
@@ -38,7 +43,7 @@ Este é um projeto completo de Gerenciador de Tarefas, com frontend em React e b
 Clone o repositório e entre na pasta do backend:
 
 ```shell
-cd backend
+cd task-manager-frontend/backend
 ```
 
 Crie e ative um ambiente virtual (opcional, mas recomendado):
@@ -63,10 +68,10 @@ O backend será executado por padrão em http://localhost:5000.
 
 ### Frontend
 
-Vá para a pasta do frontend:
+Vá para a pasta do root:
 
 ```shell
-cd frontend
+cd task-manager-frontend
 ```
 
 Instale as dependências:
@@ -87,18 +92,17 @@ O frontend abrirá em http://localhost:3000.
 
 ```bash
 project-root/
-├── frontend/
-│   ├── backend/
-│   │   ├── app.py
-│   │   ├── models.py
-│   │   ├── requirements.txt
-│   │   └── ...
-│   │
-│   ├── src/
-│   │   ├── Login.tsx
-│   │   ├── Home.tsx
-│   │   └── ...
-│   └── package.json
+├── backend/
+├── app.py
+│   ├── models.py
+│   ├── requirements.txt
+│   └── ...
+│
+├── src/
+│   ├── Login.tsx
+│   ├── Home.tsx
+│   └── ...
+└── package.json
 └── README.md
 ```
 
