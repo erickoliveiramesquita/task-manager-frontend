@@ -23,19 +23,21 @@ const Login = ({
   setError,
   handleLogin,
 }: LoginProps) => {
-  const [isLoginMode, setIsLoginMode] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [isLoginMode, setIsLoginMode] = useState(true); // toogles between login and signup states
+  const [loading, setLoading] = useState(false); // used in async to handle loading states
 
+  // handles the submit action
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+    e.preventDefault(); // prevents the action of submitting the form
+    setLoading(true); // set loading true by default, until the funcion returns
+    setError(""); // erases the error message while loading
 
+    // changes the backend service depending of the login/signup state
     const url = isLoginMode
       ? "https://erickoliveiramesquita.pythonanywhere.com/login"
       : "https://erickoliveiramesquita.pythonanywhere.com/signup";
 
-    // Validação simples
+    // checks if all fields are filled
     if (!email || !password || (!isLoginMode && !name)) {
       setError("Por favor, preencha todos os campos.");
       setLoading(false);
@@ -43,27 +45,26 @@ const Login = ({
     }
 
     try {
+      // fetches the backend service by POST method
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await response.json();
-      console.log(data);
+      const data = await response.json(); // get data
+      console.log(data); //debug
 
       if (!response.ok) {
-        setError(data.erro || "Erro desconhecido");
+        setError(data.erro || "Erro desconhecido"); // get error from data if the response is not ok
       } else {
-        setError("");
+        setError(""); // erases error message
         if (isLoginMode) {
           name = data.nome;
           email = data.email;
-          handleLogin(email, name);
-          //setError(data.erro);
+          handleLogin(email, name); // login the user if everything is ok
         } else {
-          //alert("Usuário cadastrado com sucesso!");
-          setError(data.erro);
+          setError(data.erro); // this is the "error" message coming from backend where it says if the user is created
           setIsLoginMode(true);
         }
       }
