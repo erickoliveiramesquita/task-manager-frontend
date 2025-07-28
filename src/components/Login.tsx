@@ -32,8 +32,8 @@ const Login = ({
     setError("");
 
     const url = isLoginMode
-      ? "https://task-manager-backend-flask-g2c9.onrender.com/login"
-      : "https://task-manager-backend-flask-g2c9.onrender.com/signup";
+      ? "https://erickoliveiramesquita.pythonanywhere.com/login"
+      : "https://erickoliveiramesquita.pythonanywhere.com/signup";
 
     // Validação simples
     if (!email || !password || (!isLoginMode && !name)) {
@@ -50,18 +50,20 @@ const Login = ({
       });
 
       const data = await response.json();
+      console.log(data);
 
       if (!response.ok) {
-        setError(data.error || "Erro desconhecido");
+        setError(data.erro || "Erro desconhecido");
       } else {
         setError("");
         if (isLoginMode) {
-          name = data.name;
+          name = data.nome;
           email = data.email;
           handleLogin(email, name);
-          setError(data.error);
+          //setError(data.erro);
         } else {
-          alert("Usuário cadastrado com sucesso!");
+          //alert("Usuário cadastrado com sucesso!");
+          setError(data.erro);
           setIsLoginMode(true);
         }
       }
