@@ -150,13 +150,31 @@ const Login = ({
         <p className="">
           {isLoginMode ? (
             <>
-              Não possui cadastro?{" "}
-              <a onClick={() => setIsLoginMode(false)}>Sign up</a>
+              Não possui cadastro?{"     "}
+              <button
+                type="button"
+                className="bg-transparent text-blue-600 border border-blue-600 px-2 py-1 rounded-full hover:bg-blue-100 transition-colors"
+                onClick={() => {
+                  setIsLoginMode(false);
+                  setError("");
+                }}
+              >
+                Sign up
+              </button>
             </>
           ) : (
             <>
-              Já é cadastrado?{" "}
-              <a onClick={() => setIsLoginMode(true)}>Sign in</a>
+              Já é cadastrado?{"     "}
+              <button
+                type="button"
+                className="bg-transparent text-blue-600 border border-blue-600 px-2 py-1 rounded-full hover:bg-blue-100 transition-colors"
+                onClick={() => {
+                  setIsLoginMode(true);
+                  setError("");
+                }}
+              >
+                Login
+              </button>
             </>
           )}
         </p>
