@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 import os
 import mysql.connector
 from flask_cors import CORS
+import jwt
+import datetime
 
 #pythonanywhere needs fixed path to read files
 load_dotenv("/home/erickoliveiramesquita/myapp/.env")
@@ -11,19 +13,48 @@ load_dotenv("/home/erickoliveiramesquita/myapp/.env")
 app = Flask(__name__)
 CORS(app)
 
+# my password for token creation
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-#function to connect to the users database
+# token generation
+def genToken(id):
+    payload = {
+        "id": id,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # expira em 1 hora
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+    return token
+
+# token validation
+def decodeToken(token):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        return payload  # returns { id: ..., exp: ... }
+    except jwt.ExpiredSignatureError:
+        return None  # expired Token
+    except jwt.InvalidTokenError:
+        return None  # invalid Token
+
+
+'''idt = 5
+tk = genToken(idt)
+print()
+print(tk)
+idt2 = decodeToken(tk)
+print(idt2["id"])'''
+
+# function to connect to the users database
 def connectUsersDB():
     db = mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME")
+        host = os.getenv("DB_HOST"),
+        user = os.getenv("DB_USER"),
+        password = os.getenv("DB_PASSWORD"),
+        database = os.getenv("DB_NAME")
     )
     return db
 
 
-#route for checking all the users in a plain HTML page (debugging)
+# route for checking all the users in a plain HTML page (debugging)
 @app.route('/')
 def home():
     db = connectUsersDB()
@@ -37,7 +68,7 @@ def home():
     return render_template("index.html", usuarios=dados)
 
 
-#route for list all users in a json file (debugging)
+# route for list all users in a json file (debugging)
 @app.route('/listUsers', methods=['GET'])
 def listUsers():
     db = connectUsersDB()
@@ -49,7 +80,7 @@ def listUsers():
     return jsonify(data)
 
 
-#route for login attempt and return of user data (needs improvement to send only JWT token)
+# route for login attempt and return of user data (needs improvement to send only JWT token)
 @app.route('/login', methods=['POST'])
 def login():
     db = connectUsersDB()
@@ -58,13 +89,13 @@ def login():
         email = dados.get('email')
         senha = dados.get('password')
 
-        # Validação básica de campos
+        # field validation
         if not email or not senha:
             db.close() #always ensure to close db
             return jsonify({"erro": "Email e senha são obrigatórios"}), 400
 
-        cursor = db.cursor(dictionary=True)  # dictionary=True retorna colunas com nome
-        cursor.execute("SELECT * FROM users WHERE email = %s AND senha = %s", (email, senha)) #mysql command to check if email and password matches
+        cursor = db.cursor(dictionary=True)  # dictionary=True return cols with names
+        cursor.execute("SELECT * FROM users WHERE email = %s AND senha = %s", (email, senha)) # mysql command to check if email and password matches
         usuario = cursor.fetchone()
         cursor.close()
         db.close()
@@ -73,7 +104,8 @@ def login():
             return jsonify({ # return id, name and email if user was found
                 "id": usuario["id"],
                 "nome": usuario["nome"],
-                "email": usuario["email"]
+                "email": usuario["email"],
+                "token": genToken(usuario["id"])
             }), 200
         else:
             return jsonify({"erro": "Email ou senha incorretos"}), 401
@@ -87,6 +119,31 @@ def login():
         db.close()
         print("Erro inesperado:", e)
         return jsonify({"erro": "Erro inesperado"}), 500
+
+
+# get info about name, email, last task list and config prefs
+@app.route('/getInfo', methods=['POST'])
+def getInfo():
+    db = connectUsersDB()
+    dados = request.get_json() #get the json data
+    token = decodeToken(dados.get('token'))
+    id = token["id"]
+    if(id):
+        cursor = db.cursor(dictionary=True)  # dictionary=True return cols with names
+        cursor.execute("SELECT * FROM users WHERE id = %s", (id,)) # mysql command to check if id matches
+        usuario = cursor.fetchone()
+        cursor.close()
+        db.close()
+        if usuario:
+            return jsonify({ # return name and email if user was found
+                "nome": usuario["nome"],
+                "email": usuario["email"],
+            }), 200
+        else:
+            return jsonify({"erro": "Favor logar novamente"}), 401
+    else:
+        db.close()
+        return jsonify({"erro": "Favor logar novamente"}), 401
 
 
 #route for signup and return a message if user is created
