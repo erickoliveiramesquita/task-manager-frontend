@@ -15,8 +15,6 @@ interface LoginProps {
 }
 
 const Login = ({
-  token,
-  setToken,
   name,
   setName,
   email,
