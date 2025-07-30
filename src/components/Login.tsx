@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 interface LoginProps {
+  token: string;
+  setToken: (value: string) => void;
   name: string;
   setName: (value: string) => void;
   email: string;
@@ -9,10 +11,12 @@ interface LoginProps {
   setPassword: (value: string) => void;
   error: string;
   setError: (value: string) => void;
-  handleLogin: (value: string, value2: string) => void;
+  handleLogin: (value: string) => void;
 }
 
 const Login = ({
+  token,
+  setToken,
   name,
   setName,
   email,
@@ -60,9 +64,11 @@ const Login = ({
       } else {
         setError(""); // erases error message
         if (isLoginMode) {
-          name = data.nome;
+          // check if it's in login or signup mode
+          handleLogin(data.token);
+          /*name = data.nome;
           email = data.email;
-          handleLogin(email, name); // login the user if everything is ok
+          handleLogin(token);*/ // login the user if everything is ok
         } else {
           setError(data.erro); // this is the "error" message coming from backend where it says if the user is created
           setIsLoginMode(true);
@@ -148,10 +154,12 @@ const Login = ({
           </button>
         )}
 
-        <p className="">
+        <div>
+          <span className="mr-6">
+            {isLoginMode ? "Não possui cadastro?" : "Já é cadastrado?"}
+          </span>
           {isLoginMode ? (
             <>
-              Não possui cadastro?{"     "}
               <button
                 type="button"
                 className="bg-transparent text-blue-600 border border-blue-600 px-2 py-1 rounded-full hover:bg-blue-100 transition-colors"
@@ -165,7 +173,6 @@ const Login = ({
             </>
           ) : (
             <>
-              Já é cadastrado?{"     "}
               <button
                 type="button"
                 className="bg-transparent text-blue-600 border border-blue-600 px-2 py-1 rounded-full hover:bg-blue-100 transition-colors"
@@ -178,7 +185,7 @@ const Login = ({
               </button>
             </>
           )}
-        </p>
+        </div>
       </form>
     </div>
   );

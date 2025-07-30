@@ -13,17 +13,20 @@ load_dotenv("/home/erickoliveiramesquita/myapp/.env")
 app = Flask(__name__)
 CORS(app)
 
+
 # my password for token creation
 SECRET_KEY = os.getenv("SECRET_KEY")
+
 
 # token generation
 def genToken(id):
     payload = {
         "id": id,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # expira em 1 hora
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(days=30)  # expires in 30 days
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
     return token
+
 
 # token validation
 def decodeToken(token):
@@ -35,13 +38,6 @@ def decodeToken(token):
     except jwt.InvalidTokenError:
         return None  # invalid Token
 
-
-'''idt = 5
-tk = genToken(idt)
-print()
-print(tk)
-idt2 = decodeToken(tk)
-print(idt2["id"])'''
 
 # function to connect to the users database
 def connectUsersDB():
@@ -102,9 +98,6 @@ def login():
 
         if usuario:
             return jsonify({ # return id, name and email if user was found
-                "id": usuario["id"],
-                "nome": usuario["nome"],
-                "email": usuario["email"],
                 "token": genToken(usuario["id"])
             }), 200
         else:
@@ -127,6 +120,10 @@ def getInfo():
     db = connectUsersDB()
     dados = request.get_json() #get the json data
     token = decodeToken(dados.get('token'))
+
+    if(not token):
+        return jsonify({"erro": "Expired Token"}) # return this error if the token is expired
+
     id = token["id"]
     if(id):
         cursor = db.cursor(dictionary=True)  # dictionary=True return cols with names
@@ -135,7 +132,7 @@ def getInfo():
         cursor.close()
         db.close()
         if usuario:
-            return jsonify({ # return name and email if user was found
+            return jsonify({ # return name and email if user was found. Later returns configs and prefs, but I need to add this to the 'users' table
                 "nome": usuario["nome"],
                 "email": usuario["email"],
             }), 200
@@ -149,7 +146,6 @@ def getInfo():
 #route for signup and return a message if user is created
 @app.route('/signup', methods=['POST'])
 def signup():
-    #return jsonify({"erro":"funcionando"})
     db = connectUsersDB()
     try:
         dados = request.get_json() #get the json data

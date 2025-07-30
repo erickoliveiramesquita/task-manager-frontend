@@ -8,25 +8,34 @@ const PageHandler = () => {
   const [password, setPassword] = useState(""); // password of the user in the form only
   const [error, setError] = useState(""); // error/message shown above login form
   const [isLoggedIn, setIsLoggedIn] = useState(false); // checks if its logged in or not
+  const [token, setToken] = useState("");
 
   // checks once the page has loaded if there's email and name in local storage (needs to change to check the token only)
   useEffect(() => {
-    const savedEmail = localStorage.getItem("loggedInEmail");
+    const savedToken = localStorage.getItem("loginToken");
+    if (savedToken) {
+      console.log(token);
+      setToken(savedToken);
+      setIsLoggedIn(true);
+    }
+    /*const savedEmail = localStorage.getItem("loggedInEmail");
     const savedName = localStorage.getItem("loggedInName");
     if (savedEmail && savedName) {
       setEmail(savedEmail);
       setName(savedName);
       setIsLoggedIn(true);
-    }
+    }*/
   }, []);
 
   // function to handle login setting local storage (needs to change for token)
-  const handleLogin = (email: string, name: string) => {
-    setEmail(email);
-    setName(name);
+  const handleLogin = (token: string) => {
+    setToken(token);
+    //setEmail(email);
+    //setName(name);
     setIsLoggedIn(true);
-    localStorage.setItem("loggedInEmail", email);
-    localStorage.setItem("loggedInName", name);
+    //localStorage.setItem("loggedInEmail", email);
+    //localStorage.setItem("loggedInName", name);
+    localStorage.setItem("loginToken", token);
   };
 
   // handles logout removing items in local storage (needs to change for token)
@@ -34,9 +43,11 @@ const PageHandler = () => {
     setEmail("");
     setPassword("");
     setName("");
+    setToken("");
     setIsLoggedIn(false);
     localStorage.removeItem("loggedInEmail");
     localStorage.removeItem("loggedInName");
+    localStorage.removeItem("loginToken");
   };
 
   return (
@@ -44,6 +55,8 @@ const PageHandler = () => {
       {/*if it's not in login, go to login page. Otherwise goes to homepage*/}
       {!isLoggedIn ? (
         <Login
+          token={token}
+          setToken={setToken}
           name={name}
           setName={setName}
           email={email}
@@ -55,10 +68,12 @@ const PageHandler = () => {
           handleLogin={handleLogin}
         />
       ) : (
-        <Home 
+        <Home
           email={email}
           name={name}
-          handleLogout={handleLogout} 
+          setName={setName}
+          token={token}
+          handleLogout={handleLogout}
         />
       )}
     </div>
